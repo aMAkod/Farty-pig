@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Farty Pig - A hilarious Flappy Bird style comedy arcade game where a cute pig flies by farting!">
+  <title>Farty Pig 🐷💨</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ====================================================================
+       Game Container (Auto-scales to 16:9 Letterbox on any screen)
+       ==================================================================== -->
+  <div id="game-container">
+    <!-- The HTML5 Canvas where our vector artwork is rendered -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- In-Game HUD (Heads-Up Display) -->
+    <div id="hud" class="ui-layer">
+      <div class="hud-left">
+        <div class="score-badge" title="Current Score">
+          <span>🏆</span>
+          <span id="hud-score">0</span>
+        </div>
+        <div class="poop-badge" title="Poop Collected">
+          <span>💩</span>
+          <span id="hud-poop">0</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <button id="btn-pause" class="icon-btn" title="Pause Game (P or Esc)" aria-label="Pause">⏸</button>
+        <button id="btn-sound" class="icon-btn" title="Mute/Unmute Sound (M)" aria-label="Sound Toggle">🔊</button>
+      </div>
+    </div>
+
+    <!-- Screen 1: Start Menu -->
+    <div id="screen-menu" class="overlay-screen">
+      <div class="logo-container">
+        <h1 class="game-title">Farty Pig</h1>
+        <div class="game-subtitle">🐷💨 Fly With The Power Of Gas!</div>
+      </div>
+      <div class="menu-card">
+        <div class="stat-box" style="width: 100%;">
+          <span class="stat-label">Best High Score</span>
+          <span id="menu-high-score" class="stat-value">0</span>
+        </div>
+        <button id="btn-play" class="arcade-btn btn-pink" style="width: 100%; font-size: 26px;">
+          ▶ PLAY NOW
+        </button>
+        <button id="btn-how-to-play" class="arcade-btn" style="width: 100%; font-size: 18px; padding: 10px;">
+          ❓ How To Play
+        </button>
+      </div>
+    </div>
+
+    <!-- Screen 2: Get Ready -->
+    <div id="screen-ready" class="overlay-screen hidden" style="background: transparent;">
+      <div class="ready-prompt">
+        GET READY!<br>
+        <span style="font-size: 24px; opacity: 0.95;">
+          Press <span class="key-hint">SPACE</span> or <span class="key-hint">TAP</span> to Fart &amp; Fly!
+        </span>
+      </div>
+    </div>
+
+    <!-- Screen 3: Paused -->
+    <div id="screen-paused" class="overlay-screen hidden">
+      <div class="menu-card">
+        <h2 style="font-size: 40px; font-weight: 900; color: var(--dark-text);">PAUSED</h2>
+        <button id="btn-resume" class="arcade-btn btn-pink" style="width: 100%;">
+          ▶ Resume
+        </button>
+        <button id="btn-restart-paused" class="arcade-btn" style="width: 100%;">
+          🔄 Restart
+        </button>
+        <button id="btn-toggle-bgm" class="arcade-btn" style="width: 100%; font-size: 16px; padding: 10px;">
+          🎵 Music: <span id="bgm-status-text">ON</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Screen 4: Game Over -->
+    <div id="screen-gameover" class="overlay-screen hidden">
+      <div class="menu-card">
+        <div class="game-over-title">GAME OVER</div>
+        <div id="medal-container" class="medal-display">
+          <span id="medal-icon" class="medal-icon">🥉</span>
+          <span id="medal-text">Bronze Piglet!</span>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span class="stat-label">Score</span>
+            <span id="gameover-score" class="stat-value">0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Best</span>
+            <span id="gameover-best" class="stat-value">0</span>
+          </div>
+        </div>
+        <div class="stat-box" style="width: 100%;">
+          <span class="stat-label">Total Poop Collected</span>
+          <span id="gameover-poop" class="stat-value" style="color: var(--poop-dark);">💩 0</span>
+        </div>
+        <button id="btn-restart" class="arcade-btn btn-pink" style="width: 100%; font-size: 26px;">
+          🔄 PLAY AGAIN
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal: How to Play -->
+    <div id="modal-instructions" class="modal-backdrop hidden">
+      <div class="modal-content">
+        <h3 class="modal-title">How To Play 🐷💨</h3>
+        <ul class="instructions-list">
+          <li>
+            <span class="icon">🚀</span>
+            <span>Press <strong>SPACE</strong>, <strong>UP ARROW</strong>, or <strong>CLICK/TAP</strong> to fart and fly upward!</span>
+          </li>
+          <li>
+            <span class="icon">🌾</span>
+            <span>Dodge the stacks of <strong>golden hay bales</strong>. Crashing causes a wipeout!</span>
+          </li>
+          <li>
+            <span class="icon">💩</span>
+            <span>Collect <strong>swirly poop</strong> floating in the gaps for <strong>+2 BONUS POINTS</strong>!</span>
+          </li>
+          <li>
+            <span class="icon">⏸️</span>
+            <span>Press <strong>P</strong> or <strong>ESC</strong> anytime to pause the game.</span>
+          </li>
+          <li>
+            <span class="icon">💨</span>
+            <span>Press <strong>ENTER</strong> anytime to toot on demand!</span>
+          </li>
+        </ul>
+        <button id="btn-close-instructions" class="arcade-btn btn-pink" style="margin-top: 22px; width: 100%;">
+          GOT IT!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Portrait Warning -->
+  <div id="portrait-overlay">
+    <div class="rotate-phone-icon">📱↻</div>
+    <h2>Please Rotate Your Device</h2>
+    <p style="margin-top: 10px; color: #a4b0be;">Farty Pig is designed for Landscape mode!</p>
+  </div>
+
+  <!-- ====================================================================
+       Modular JavaScript Architecture (Loaded in dependency order with defer)
+       ==================================================================== -->
+  <script defer src="js/config.js"></script>
+  <script defer src="js/audio.js"></script>
+  <script defer src="js/particles.js"></script>
+  <script defer src="js/pig.js"></script>
+  <script defer src="js/obstacles.js"></script>
+  <script defer src="js/ui.js"></script>
+  <script defer src="js/main.js"></script>
+</body>
+</html>
+
